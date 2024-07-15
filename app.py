@@ -35,7 +35,7 @@ def main_app():
     st.sidebar.image('data/logoACAG.png', use_column_width=True)
     st.sidebar.header('Gestiones')
     # Obtener el token de acceso desde los secretos de Streamlit
-    dropbox_access_token = st.secrets["DROPBOX_ACCESS_TOKEN"]
+
     menu = st.sidebar.radio("Ir a", ["Resumen", "Cambiar día","Boarding-pass"])
 
     path = 'data/bbdd.xlsx'
@@ -152,7 +152,7 @@ def main_app():
 
 
     elif menu == "Boarding-pass":
-    
+        dropbox_access_token = st.secrets["DROPBOX_ACCESS_TOKEN"]
             # Función para autenticar en Dropbox
         def authenticate_dropbox():
             ACCESS_TOKEN = dropbox.Dropbox(dropbox_access_token)
