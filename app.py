@@ -153,12 +153,12 @@ def main_app():
 
 
     elif menu == "Boarding-pass":
-        
-        ACCESS_TOKEN = st.secrets["DROPBOX_ACCESS_TOKEN"]
         if "DROPBOX_ACCESS_TOKEN" in st.secrets:
             ACCESS_TOKEN = st.secrets["DROPBOX_ACCESS_TOKEN"]
         else:
             st.error("El token de acceso de Dropbox no está configurado.")
+       
+
        
             # Función para autenticar en Dropbox
         
