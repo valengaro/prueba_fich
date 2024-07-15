@@ -209,10 +209,11 @@ def main_app():
 
         st.title("Visor y Registro de PDFs en Streamlit")
 
-        uploaded_file = st.file_uploader("Cargar un archivo PDF", type="pdf")
-        fecha_viaje = st.date_input("Fecha del Viaje")
+
         st.write("Registro de archivos subidos:")
         st.write(st.session_state['dataframe'].to_html(escape=False, index=False), unsafe_allow_html=True)
+        uploaded_file = st.file_uploader("Cargar un archivo PDF", type="pdf")
+        fecha_viaje = st.date_input("Fecha del Viaje")
        # Mostrar el dataframe con enlaces de descarga
         
         if uploaded_file is not None and fecha_viaje is not None:
