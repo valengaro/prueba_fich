@@ -218,19 +218,15 @@ def main_app():
             st.session_state['dataframe'] = pd.concat([st.session_state['dataframe'], nuevo_registro], ignore_index=True)
 
             # Guardar el dataframe en un archivo Excel en Dropbox
-            with io.BytesIO() as output:
-                st.session_state['dataframe'].to_excel(output, index=False)
-                output.seek(0)
-                upload_to_dropbox(dbx, output.read(), excel_file, folder_path)
-        # Ejecutar la aplicación principal
-        if __name__ == "__main__":
-            main_app()
-        # Mostrar el dataframe con enlaces de descarga
+            #with io.BytesIO() as output:
+             #   st.session_state['dataframe'].to_excel(output, index=False)
+              #  output.seek(0)
+               # upload_to_dropbox(dbx, output.read(), excel_file, folder_path)
+
+         # Mostrar el dataframe con enlaces de descarga
         st.write("Registro de archivos subidos:")
         st.write(st.session_state['dataframe'].to_html(escape=False, index=False), unsafe_allow_html=True)
-        # Ejecutar la aplicación principal
-        if __name__ == "__main__":
-            main_app()
+
     
     if st.button("Logout"):
         st.session_state["logged_in"] = False
