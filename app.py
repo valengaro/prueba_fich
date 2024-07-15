@@ -155,7 +155,7 @@ def main_app():
     elif menu == "Boarding-pass":
         
         ACCESS_TOKEN = st.secrets["DROPBOX_ACCESS_TOKEN"]
-        print(ACCESS_TOKEN)
+        st.write(ACCESS_TOKEN)
             # Función para autenticar en Dropbox
         
         # Función para subir archivo a Dropbox
