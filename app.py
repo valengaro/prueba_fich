@@ -5,8 +5,6 @@ from datetime import datetime
 import os
 import dropbox
 
-
-
 # Configuración de la página
 st.set_page_config(page_title="Fichajes-Atlantic Cobalt", layout="wide")
 
@@ -36,9 +34,10 @@ def main_app():
     # Título de la aplicación
     st.sidebar.image('data/logoACAG.png', use_column_width=True)
     st.sidebar.header('Gestiones')
+    
     # Obtener el token de acceso desde los secretos de Streamlit
     dropbox_access_token = st.secrets["DROPBOX_ACCESS_TOKEN"]
-    menu = st.sidebar.radio("Ir a", ["Resumen", "Cambiar día","Boarding-pass"])
+    menu = st.sidebar.radio("Ir a", ["Resumen", "Cambiar día", "Boarding-pass"])
 
     path = 'data/bbdd.xlsx'
     df = pd.read_excel(path)
@@ -67,11 +66,10 @@ def main_app():
         df_final.sort_values(by=['Pais Real', 'Estado'], inplace=True)
 
         # Eliminar la columna 'Pais Real'
-        #df_final = df_final.drop(columns=['Pais Real'])
+        # df_final = df_final.drop(columns=['Pais Real'])
 
         # Reordenar las columnas
-        #df_final = df_final[['Estado', 'Festivo', 'Laborable', 'Total_general']]
-        
+        # df_final = df_final[['Estado', 'Festivo', 'Laborable', 'Total_general']]
 
         sorted_df = pd.concat([
             df_final[(df_final['Estado'] == 'España') & (df_final['Pais Real'] == 'España')],
@@ -79,24 +77,22 @@ def main_app():
             df_final[df_final['Estado'] == 'Suiza'],
             df_final[((df_final['Estado'] == 'Programado') | (df_final['Estado'] == 'Real igual programado')) & (df_final['Pais Real'] != 'España')]
         ])
-        
+
         sorted_df.loc[sorted_df['Pais Real'] == 'Pendiente', 'Estado'] = 'Pendiente'
-        
+
         # Función para aplicar estilos
         def highlight_rows(s):
-            if s.Estado in ['España', 'Suiza','Pendiente']:
-                return ['background-color: lightblue; font-weight: bold']*len(s)
+            if s.Estado in ['España', 'Suiza', 'Pendiente']:
+                return ['background-color: lightblue; font-weight: bold'] * len(s)
             else:
-                return ['']*len(s)
+                return [''] * len(s)
 
         # Aplicar estilos al dataframe
         styled_df = sorted_df.style.apply(highlight_rows, axis=1)
-        
-        
-        
+
         st.title("Resumen días")
         st.table(styled_df)
-    
+
     # Contenido para Opción 2
     elif menu == "Cambiar día":
 
@@ -128,8 +124,8 @@ def main_app():
             nuevo_jornada = st.selectbox('Nuevo Jornada en Suiza', ['Laborable', 'Festivo'], index=0 if fila_a_modificar['Jornada en Suiza'] == 'Laborable' else 1)
             nueva_ciudad_prog = st.text_input('Nueva Ciudad Prog', value=fila_a_modificar['Ciudad Prog'])
             nuevo_pais_prog = st.text_input('Nuevo Pais Prog', value=fila_a_modificar['Pais Prog'])
-            nuevo_estado = st.selectbox('Nuevo Estado', ['Real igual programado', 'Programado', 'Real distinto programado'], 
-                                index=['Real igual programado', 'Programado', 'Real distinto programado'].index(fila_a_modificar['Estado']))
+            nuevo_estado = st.selectbox('Nuevo Estado', ['Real igual programado', 'Programado', 'Real distinto programado'],
+                                        index=['Real igual programado', 'Programado', 'Real distinto programado'].index(fila_a_modificar['Estado']))
             nueva_ciudad_real = st.text_input('Nueva Ciudad Real', value=fila_a_modificar['Ciudad Real'])
             nuevo_pais_real = st.text_input('Nuevo Pais Real', value=fila_a_modificar['Pais Real'])
 
@@ -149,16 +145,12 @@ def main_app():
                 st.dataframe(df)
         else:
             st.write('No se encontró ninguna fila con la fecha seleccionada.')
-            
-
-
 
     elif menu == "Boarding-pass":
-    
-            # Función para autenticar en Dropbox
+
+        # Función para autenticar en Dropbox
         def authenticate_dropbox():
-            ACCESS_TOKEN = dropbox.Dropbox(dropbox_access_token)
-            dbx = dropbox.Dropbox(ACCESS_TOKEN)
+            dbx = dropbox.Dropbox(dropbox_access_token)
             return dbx
 
         # Función para subir archivo a Dropbox
@@ -197,48 +189,4 @@ def main_app():
         uploaded_file = st.file_uploader("Cargar un archivo PDF", type="pdf")
         fecha_viaje = st.date_input("Fecha del Viaje")
 
-        if uploaded_file is not None and fecha_viaje is not None:
-            # Registrar información del archivo subido
-            fecha_subida = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            nombre_archivo = uploaded_file.name
-            fecha_viaje_str = fecha_viaje.strftime("%Y-%m-%d")
-            
-            # Convertir el archivo subido a un formato manejable
-            pdf_file_content = uploaded_file.getvalue()
-
-            # Subir el archivo a Dropbox
-            shared_url = upload_to_dropbox(dbx, pdf_file_content, nombre_archivo, folder_path)
-
-            # Generar enlace de descarga
-            link_descarga = generar_link_de_descarga(shared_url, nombre_archivo)
-
-            # Añadir la información al dataframe
-            nuevo_registro = pd.DataFrame([[fecha_subida, fecha_viaje_str, nombre_archivo, link_descarga]], 
-                                        columns=['Fecha de Subida', 'Fecha del Viaje', 'Nombre del Archivo', 'Enlace de Descarga'])
-            st.session_state['dataframe'] = pd.concat([st.session_state['dataframe'], nuevo_registro], ignore_index=True)
-
-            # Guardar el dataframe en un archivo Excel en Dropbox
-            with io.BytesIO() as output:
-                st.session_state['dataframe'].to_excel(output, index=False)
-                output.seek(0)
-                upload_to_dropbox(dbx, output.read(), excel_file, folder_path)
-
-        # Mostrar el dataframe con enlaces de descarga
-        st.write("Registro de archivos subidos:")
-        st.write(st.session_state['dataframe'].to_html(escape=False, index=False), unsafe_allow_html=True)
-    
-    if st.button("Logout"):
-        st.session_state["logged_in"] = False
-
-# Configurar la página inicial de Streamlit
-if "logged_in" not in st.session_state:
-    st.session_state["logged_in"] = False
-
-if st.session_state["logged_in"]:
-    main_app()
-else:
-    login_screen()
-
-
-
-
+        if uploaded_file is not None and fecha
