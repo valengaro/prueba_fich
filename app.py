@@ -240,8 +240,8 @@ def main_app():
                     upload_to_dropbox(dbx, output.read(), excel_file, folder_path)
 
         # Mostrar el dataframe con enlaces de descarga
-        st.write("Registro de archivos subidos:")
-        st.write(st.session_state['dataframe'].to_html(escape=False, index=False), unsafe_allow_html=True)
+    st.write("Registro de archivos subidos:")
+    st.write(st.session_state['dataframe'].to_html(escape=False, index=False), unsafe_allow_html=True)
 
     
     if st.button("Logout"):
