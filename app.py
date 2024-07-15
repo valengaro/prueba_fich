@@ -158,15 +158,30 @@ def main_app():
             ACCESS_TOKEN = st.secrets["DROPBOX_ACCESS_TOKEN"]
         else:
             st.error("El token de acceso de Dropbox no está configurado.")
-             
-            # Función para autenticar en Dropbox
-        
+            st.stop()
+
+        # Función para autenticar en Dropbox
+
+        # Función para obtener un enlace compartido existente o crear uno nuevo
+        def get_shared_link(dbx, file_path):
+            try:
+                # Verificar si ya existe un enlace compartido
+                shared_links = dbx.sharing_list_shared_links(path=file_path, direct_only=True)
+                if shared_links.links:
+                    return shared_links.links[0].url
+                else:
+                    # Crear un nuevo enlace compartido
+                    shared_link_metadata = dbx.sharing_create_shared_link_with_settings(file_path)
+                    return shared_link_metadata.url
+            except dropbox.exceptions.ApiError as err:
+                st.error(f"Error al obtener/crear el enlace compartido: {err}")
+                return None
+
         # Función para subir archivo a Dropbox
         def upload_to_dropbox(dbx, file_content, filename, folder_path):
             dropbox_path = f"{folder_path}/{filename}"
             dbx.files_upload(file_content, dropbox_path, mode=dropbox.files.WriteMode("overwrite"))
-            shared_link_metadata = dbx.sharing_create_shared_link_with_settings(dropbox_path)
-            return shared_link_metadata.url
+            return get_shared_link(dbx, dropbox_path)
 
         # Función para descargar archivo de Dropbox
         def download_from_dropbox(dbx, filename, folder_path):
@@ -209,21 +224,22 @@ def main_app():
             # Subir el archivo a Dropbox
             shared_url = upload_to_dropbox(dbx, pdf_file_content, nombre_archivo, folder_path)
 
-            # Generar enlace de descarga
-            link_descarga = generar_link_de_descarga(shared_url, nombre_archivo)
+            if shared_url:
+                # Generar enlace de descarga
+                link_descarga = generar_link_de_descarga(shared_url, nombre_archivo)
 
-            # Añadir la información al dataframe
-            nuevo_registro = pd.DataFrame([[fecha_subida, fecha_viaje_str, nombre_archivo, link_descarga]], 
-                                        columns=['Fecha de Subida', 'Fecha del Viaje', 'Nombre del Archivo', 'Enlace de Descarga'])
-            st.session_state['dataframe'] = pd.concat([st.session_state['dataframe'], nuevo_registro], ignore_index=True)
+                # Añadir la información al dataframe
+                nuevo_registro = pd.DataFrame([[fecha_subida, fecha_viaje_str, nombre_archivo, link_descarga]], 
+                                            columns=['Fecha de Subida', 'Fecha del Viaje', 'Nombre del Archivo', 'Enlace de Descarga'])
+                st.session_state['dataframe'] = pd.concat([st.session_state['dataframe'], nuevo_registro], ignore_index=True)
 
-            # Guardar el dataframe en un archivo Excel en Dropbox
-            #with io.BytesIO() as output:
-             #   st.session_state['dataframe'].to_excel(output, index=False)
-              #  output.seek(0)
-               # upload_to_dropbox(dbx, output.read(), excel_file, folder_path)
+                # Guardar el dataframe en un archivo Excel en Dropbox
+                with io.BytesIO() as output:
+                    st.session_state['dataframe'].to_excel(output, index=False)
+                    output.seek(0)
+                    upload_to_dropbox(dbx, output.read(), excel_file, folder_path)
 
-         # Mostrar el dataframe con enlaces de descarga
+        # Mostrar el dataframe con enlaces de descarga
         st.write("Registro de archivos subidos:")
         st.write(st.session_state['dataframe'].to_html(escape=False, index=False), unsafe_allow_html=True)
 
