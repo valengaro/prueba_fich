@@ -211,7 +211,9 @@ def main_app():
 
         uploaded_file = st.file_uploader("Cargar un archivo PDF", type="pdf")
         fecha_viaje = st.date_input("Fecha del Viaje")
-
+       # Mostrar el dataframe con enlaces de descarga
+        st.write("Registro de archivos subidos:")
+        st.write(st.session_state['dataframe'].to_html(escape=False, index=False), unsafe_allow_html=True)
         if uploaded_file is not None and fecha_viaje is not None:
             # Registrar información del archivo subido
             fecha_subida = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -239,9 +241,7 @@ def main_app():
                     output.seek(0)
                     upload_to_dropbox(dbx, output.read(), excel_file, folder_path)
 
-        # Mostrar el dataframe con enlaces de descarga
-    st.write("Registro de archivos subidos:")
-    st.write(st.session_state['dataframe'].to_html(escape=False, index=False), unsafe_allow_html=True)
+ 
 
     
     if st.button("Logout"):
