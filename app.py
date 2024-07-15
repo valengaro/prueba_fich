@@ -32,6 +32,11 @@ def login_screen():
 # Función para mostrar la aplicación principal
 def main_app():
     # Título de la aplicación
+    if "DROPBOX_ACCESS_TOKEN" in st.secrets:
+        ACCESS_TOKEN = st.secrets["DROPBOX_ACCESS_TOKEN"]
+    else:
+        st.error("El token de acceso de Dropbox no está configurado.")
+        return
     st.sidebar.image('data/logoACAG.png', use_column_width=True)
     st.sidebar.header('Gestiones')
     # Obtener el token de acceso desde los secretos de Streamlit
