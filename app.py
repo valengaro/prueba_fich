@@ -153,13 +153,12 @@ def main_app():
 
 
     elif menu == "Boarding-pass":
+        
         if "DROPBOX_ACCESS_TOKEN" in st.secrets:
             ACCESS_TOKEN = st.secrets["DROPBOX_ACCESS_TOKEN"]
         else:
             st.error("El token de acceso de Dropbox no está configurado.")
-       
-
-       
+             
             # Función para autenticar en Dropbox
         
         # Función para subir archivo a Dropbox
@@ -223,10 +222,15 @@ def main_app():
                 st.session_state['dataframe'].to_excel(output, index=False)
                 output.seek(0)
                 upload_to_dropbox(dbx, output.read(), excel_file, folder_path)
-
+        # Ejecutar la aplicación principal
+        if __name__ == "__main__":
+            main_app()
         # Mostrar el dataframe con enlaces de descarga
         st.write("Registro de archivos subidos:")
         st.write(st.session_state['dataframe'].to_html(escape=False, index=False), unsafe_allow_html=True)
+        # Ejecutar la aplicación principal
+        if __name__ == "__main__":
+            main_app()
     
     if st.button("Logout"):
         st.session_state["logged_in"] = False
