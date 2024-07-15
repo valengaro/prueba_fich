@@ -5,6 +5,8 @@ from datetime import datetime
 import dropbox
 import os
 
+
+
 # Configuración de la página
 st.set_page_config(page_title="Fichajes-Atlantic Cobalt", layout="wide")
 
