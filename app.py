@@ -152,13 +152,11 @@ def main_app():
 
 
     elif menu == "Boarding-pass":
-        dropbox_access_token = st.secrets["DROPBOX_ACCESS_TOKEN"]
+        
+        secrets = st.secrets['dropbox']
+        token = secrets["DROPBOX_ACCESS_TOKEN"]
             # Función para autenticar en Dropbox
-        def authenticate_dropbox():
-            ACCESS_TOKEN = dropbox.Dropbox(dropbox_access_token)
-            dbx = dropbox.Dropbox(ACCESS_TOKEN)
-            return dbx
-
+        
         # Función para subir archivo a Dropbox
         def upload_to_dropbox(dbx, file_content, filename, folder_path):
             dropbox_path = f"{folder_path}/{filename}"
@@ -181,7 +179,7 @@ def main_app():
         excel_file = "registro_archivos.xlsx"
 
         # Inicializa o carga el dataframe
-        dbx = authenticate_dropbox()
+        dbx = token
         try:
             excel_content = download_from_dropbox(dbx, excel_file, folder_path)
             dataframe = pd.read_excel(io.BytesIO(excel_content))
