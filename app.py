@@ -76,9 +76,9 @@ def main_app():
 
         sorted_df = pd.concat([
             df_final[(df_final['Estado'] == 'España') & (df_final['Pais Real'] == 'España')],
-            df_final[((df_final['Estado'] == 'Programado') | (df_final['Estado'] == 'Real igual programado')) & (df_final['Pais Real'] == 'España')],
+            df_final[((df_final['Estado'] == 'Programado') | (df_final['Estado'] == 'Real igual programado')| (df_final['Estado'] == 'Real distinto programado')) & (df_final['Pais Real'] == 'España')],
             df_final[df_final['Estado'] == 'Suiza'],
-            df_final[((df_final['Estado'] == 'Programado') | (df_final['Estado'] == 'Real igual programado')) & (df_final['Pais Real'] != 'España')]
+            df_final[((df_final['Estado'] == 'Programado') | (df_final['Estado'] == 'Real igual programado')| (df_final['Estado'] == 'Real distinto programado')) & (df_final['Pais Real'] != 'España')]
         ])
         
         sorted_df.loc[sorted_df['Pais Real'] == 'Pendiente', 'Estado'] = 'Pendiente'
