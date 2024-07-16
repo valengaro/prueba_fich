@@ -45,7 +45,7 @@ def main_app():
     # Contenido para Opción 1
     if menu == "Resumen":
         # Crear la tabla dinámica (pivot table)
-        pivot = pd.pivot_table(df, index=['Estado','Pais Prog'], columns='Jornada en Suiza', values='Pais Prog', aggfunc='count')
+        pivot = pd.pivot_table(df, index=['Estado','Pais Real'], columns='Jornada en Suiza', values='Pais Prog', aggfunc='count')
         pivot["Total_general"] = pivot['Festivo'] + pivot['Laborable']
 
         # Calcular la suma por país
