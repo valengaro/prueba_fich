@@ -89,7 +89,7 @@ def main_app():
                 return ['']*len(s)
 
         # Aplicar estilos al dataframe
-        styled_df = sorted_df.round(0).style.apply(highlight_rows, axis=1)
+        styled_df = sorted_df.round(0).astype(int).style.apply(highlight_rows, axis=1)
         
         
         
