@@ -90,7 +90,7 @@ def main_app():
 
         # Aplicar estilos al dataframe
         styled_df=sorted_df.round(0)
-        styled_df = sorted_df.style.apply(highlight_rows, axis=1)
+        styled_df = sorted_df.style.format({"Festivo": "{:.0f}", "Laborable": "{:.0f}", "Total_general": "{:.0f}"}).apply(highlight_rows, axis=1)
         
         
         
